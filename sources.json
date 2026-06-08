@@ -1,0 +1,68 @@
+{
+  "rss_sources": [
+    {
+      "name": "BBC Persian",
+      "url": "https://feeds.bbci.co.uk/persian/rss.xml",
+      "category": "ایران و جهان",
+      "priority": 1
+    },
+    {
+      "name": "VOA Persian",
+      "url": "https://ir.voanews.com/api/zmgqem",
+      "category": "ایران و جهان",
+      "priority": 1
+    },
+    {
+      "name": "Reuters World",
+      "url": "https://www.reutersagency.com/feed/?best-topics=world&post_type=best",
+      "category": "جهان",
+      "priority": 1
+    },
+    {
+      "name": "AP Top News",
+      "url": "https://apnews.com/hub/ap-top-news?output=rss",
+      "category": "جهان",
+      "priority": 1
+    },
+    {
+      "name": "CNN World",
+      "url": "http://rss.cnn.com/rss/edition_world.rss",
+      "category": "جهان",
+      "priority": 2
+    },
+    {
+      "name": "Mehr News",
+      "url": "https://www.mehrnews.com/rss",
+      "category": "داخلی",
+      "priority": 3
+    },
+    {
+      "name": "ISNA",
+      "url": "https://www.isna.ir/rss",
+      "category": "داخلی",
+      "priority": 3
+    },
+    {
+      "name": "Fars News",
+      "url": "https://www.farsnews.ir/rss",
+      "category": "داخلی",
+      "priority": 3
+    },
+    {
+      "name": "TechCrunch",
+      "url": "https://techcrunch.com/feed/",
+      "category": "تکنولوژی",
+      "priority": 2
+    },
+    {
+      "name": "The Verge",
+      "url": "https://www.theverge.com/rss/index.xml",
+      "category": "تکنولوژی",
+      "priority": 2
+    }
+  ],
+  "telegram_sources_note": [
+    "برای کانال‌های تلگرام عمومی، بهترین روش در نسخه حرفه‌ای استفاده از Telethon با api_id/api_hash است.",
+    "در این نسخه امن و ساده، RSS و سایت‌ها فعال‌اند. اتصال تلگرام‌به‌تلگرام را بعد از گرفتن VPS/Render Worker اضافه می‌کنیم."
+  ]
+}
