@@ -223,7 +223,7 @@ def gemini_post(title: str, summary: str, source: str, category: str, url: str) 
 متن اصلی: {summary}
 """
 
-    endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+    endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini- 2 . 0 -flash:generateContent"
 
     try:
         response = requests.post(
