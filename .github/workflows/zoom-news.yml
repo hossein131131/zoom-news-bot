@@ -33,7 +33,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run Zoom News Bot
-        env:
+env:
   TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
   TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
   GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
