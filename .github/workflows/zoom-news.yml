@@ -34,9 +34,8 @@ jobs:
 
       - name: Run Zoom News Bot
         env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          MAX_POSTS_PER_RUN: 6
-          MAX_POSTS_PER_DAY: 90
-        run: python main.py
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+  MAX_POSTS_PER_RUN: 6
+  MAX_POSTS_PER_DAY: 90
