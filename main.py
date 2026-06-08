@@ -2,7 +2,6 @@ import os
 import re
 import json
 import sqlite3
-import hashlib
 from datetime import datetime, date
 from typing import Dict, Any, Optional, List
 
@@ -28,33 +27,19 @@ SOURCES_PATH = "sources.json"
 bot = Bot(token=TELEGRAM_BOT_TOKEN)
 client = OpenAI(api_key=OPENAI_API_KEY) if OpenAI and OPENAI_API_KEY else None
 
-
 def init_db():
     con = sqlite3.connect(DB_PATH)
     cur = con.cursor()
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS posted (
-            url TEXT PRIMARY KEY,
-            title TEXT,
-            posted_at TEXT
-        )
-    """)
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS daily_count (
-            day TEXT PRIMARY KEY,
-            count INTEGER
-        )
-    """)
+    cur.execute("CREATE TABLE IF NOT EXISTS posted (url TEXT PRIMARY KEY, title TEXT, posted_at TEXT)")
+    cur.execute("CREATE TABLE IF NOT EXISTS daily_count (day TEXT PRIMARY KEY, count INTEGER)")
     con.commit()
     con.close()
-
 
 def clean_html(text: str) -> str:
     if not text:
         return ""
     soup = BeautifulSoup(text, "html.parser")
     return re.sub(r"\s+", " ", soup.get_text(" ", strip=True)).strip()
-
 
 def already_posted(url: str) -> bool:
     con = sqlite3.connect(DB_PATH)
@@ -63,7 +48,6 @@ def already_posted(url: str) -> bool:
     ok = cur.fetchone() is not None
     con.close()
     return ok
-
 
 def mark_posted(url: str, title: str):
     con = sqlite3.connect(DB_PATH)
@@ -75,7 +59,6 @@ def mark_posted(url: str, title: str):
     con.commit()
     con.close()
 
-
 def today_count() -> int:
     con = sqlite3.connect(DB_PATH)
     cur = con.cursor()
@@ -85,11 +68,9 @@ def today_count() -> int:
     con.close()
     return row[0] if row else 0
 
-
 def load_sources():
     with open(SOURCES_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
-
 
 def extract_image(entry: Dict[str, Any]) -> Optional[str]:
     media = entry.get("media_content") or entry.get("media_thumbnail") or []
@@ -105,7 +86,6 @@ def extract_image(entry: Dict[str, Any]) -> Optional[str]:
     img = soup.find("img")
     return img.get("src") if img else None
 
-
 def classify_category(title: str, summary: str, default_category: str, keywords: Dict[str, List[str]]) -> str:
     text = f"{title} {summary}".lower()
     if any(k.lower() in text for k in keywords.get("migration", [])):
@@ -116,15 +96,9 @@ def classify_category(title: str, summary: str, default_category: str, keywords:
         return "تکنولوژی"
     return default_category
 
-
 def importance_score(title: str, summary: str, category: str) -> int:
     text = f"{title} {summary}".lower()
-    hot = [
-        "iran", "ایران", "israel", "gaza", "war", "attack", "sanction", "nuclear",
-        "آمریکا", "اسرائیل", "جنگ", "حمله", "تحریم", "هسته‌ای", "فوری", "breaking",
-        "dollar", "gold", "visa", "schengen", "openai", "chatgpt", "apple", "samsung",
-        "دلار", "طلا", "ویزا", "شینگن", "هوش مصنوعی", "موبایل"
-    ]
+    hot = ["iran","ایران","israel","gaza","war","attack","sanction","nuclear","آمریکا","اسرائیل","جنگ","حمله","تحریم","هسته‌ای","فوری","breaking","dollar","gold","visa","schengen","openai","chatgpt","apple","samsung","دلار","طلا","ویزا","شینگن","هوش مصنوعی","موبایل"]
     score = 0
     for k in hot:
         if k in text:
@@ -135,27 +109,23 @@ def importance_score(title: str, summary: str, category: str) -> int:
         score += 1
     return score
 
-
 def hashtags(category: str) -> str:
-    m = {
+    return {
         "مهاجرت و ویزا": "#مهاجرت #ویزا #شینگن",
         "اقتصاد و بازار": "#اقتصاد #دلار #طلا #تتر",
         "تکنولوژی": "#تکنولوژی #هوش_مصنوعی #موبایل",
         "جهان": "#جهان #خبر",
         "ایران و جهان": "#ایران #جهان",
         "داخلی": "#ایران",
-    }
-    return m.get(category, "#خبر")
-
+    }.get(category, "#خبر")
 
 def ai_rewrite(title: str, summary: str, source: str, category: str, url: str) -> str:
     if client:
         prompt = f"""
 تو سردبیر حرفه‌ای کانال تلگرام Zoom News هستی.
 خبر را به فارسی روان، جذاب، دقیق و کوتاه آماده انتشار کن.
-
 قوانین:
-- اگر خبر انگلیسی است ترجمه طبیعی و حرفه‌ای فارسی بده.
+- اگر خبر انگلیسی است ترجمه طبیعی فارسی بده.
 - اگر فارسی است، بازنویسی تمیز و خلاصه بده.
 - خبر زرد نساز و چیزی اضافه نکن.
 - خروجی ۴ تا ۷ خط باشد.
@@ -196,7 +166,6 @@ def ai_rewrite(title: str, summary: str, source: str, category: str, url: str) -
 📡 <b>Zoom News</b>
 ━━━━━━━━━━━━━━"""
 
-
 async def send_post(text: str, image_url: Optional[str] = None):
     if image_url:
         try:
@@ -206,24 +175,21 @@ async def send_post(text: str, image_url: Optional[str] = None):
             print("send_photo failed:", e)
     await bot.send_message(chat_id=TELEGRAM_CHANNEL, text=text[:4096], parse_mode=ParseMode.HTML, disable_web_page_preview=False)
 
-
 async def main():
     if not TELEGRAM_BOT_TOKEN:
-        raise RuntimeError("Missing TELEGRAM_BOT_TOKEN or TELEGRAM_TOKEN")
+        raise RuntimeError("Missing TELEGRAM_BOT_TOKEN")
     if not TELEGRAM_CHANNEL:
         raise RuntimeError("Missing TELEGRAM_CHANNEL")
 
     init_db()
     data = load_sources()
-    sources = data["rss_sources"]
-    keywords = data.get("keywords", {})
     candidates = []
 
     if today_count() >= MAX_POSTS_PER_DAY:
         print("Daily limit reached")
         return
 
-    for src in sources:
+    for src in data["rss_sources"]:
         try:
             feed = feedparser.parse(src["url"])
             for entry in feed.entries[:10]:
@@ -232,7 +198,7 @@ async def main():
                 summary = clean_html(entry.get("summary", entry.get("description", "")))
                 if not url or not title or already_posted(url):
                     continue
-                category = classify_category(title, summary, src.get("category", "خبر"), keywords)
+                category = classify_category(title, summary, src.get("category", "خبر"), data.get("keywords", {}))
                 score = importance_score(title, summary, category) + (4 - int(src.get("priority", 3)))
                 if score >= 2:
                     candidates.append((score, src, entry, title, summary, url, category))
@@ -248,7 +214,6 @@ async def main():
         await send_post(text, image_url)
         mark_posted(url, title)
         print("Posted:", title)
-
 
 if __name__ == "__main__":
     import asyncio
